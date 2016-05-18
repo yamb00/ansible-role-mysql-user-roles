@@ -15,19 +15,17 @@
   set_fact:     
     privileges: "{{ priv_result.results | map(attribute='ansible_facts.priv_item') | list }}"
 
-  # 
+  # flatten privileges list
 - name: flatten privileges list
   debug: msg=""
   with_flattened:
       - "{{ privileges | list }}"
   register: privileges_tmp
 
+  # collect privileges from flatten list again
 - name: join privileges again
   set_fact:
     privileges: "{{ privileges_tmp.results | map(attribute='item') | list }}"
-
-- name: debug join
-  debug: var=privileges
 
 - name: create mysql user {{ this_user }}
   mysql_user: >
