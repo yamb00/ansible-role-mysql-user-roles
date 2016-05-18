@@ -44,20 +44,22 @@ Example Playbook
 
 Including an example of how to use your role (for instance, with variables passed in as parameters) is always nice for users too:
 
-    - hosts: localhost
-      vars:
-      	mysql_user:
-		  - name: foo
-		    host: localhost
-		    password: ''
-		    roles:
-		      - webmaster
-		mysql_user_roles:
-		  - name: webmaster
-		    priv: 
-		      - 'webdata.*:CREATE,SELECT'
-      roles:
-         - { role: yamb00.mysql-user-roles }
+```yml
+- hosts: localhost
+  vars:
+  	mysql_user:
+  - name: foo
+    host: localhost
+    password: ''
+    roles:
+      - webmaster
+mysql_user_roles:
+  - name: webmaster
+    priv: 
+      - 'webdata.*:CREATE,SELECT'
+  roles:
+     - { role: yamb00.mysql-user-roles }
+```
 
 License
 -------
