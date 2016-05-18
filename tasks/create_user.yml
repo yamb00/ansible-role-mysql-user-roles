@@ -1,0 +1,41 @@
+---
+- name: set username {{ item.name }}
+  set_fact:
+    this_user: '{{ item.name }}'
+
+  # iterate over defined roles and collect privileges for current user
+- name: register privileges for {{ this_user }}
+  set_fact:     
+    priv_item: "{{ mysql_user_roles | selectattr('name','equalto',item)| map(attribute='priv') | list }}"
+  with_items: '{{ item.roles }}'
+  register: priv_result
+
+  # join privileges per for current user
+- name: collect privileges for {{ this_user }}
+  set_fact:     
+    privileges: "{{ priv_result.results | map(attribute='ansible_facts.priv_item') | list }}"
+
+  # 
+- name: flatten privileges list
+  debug: msg=""
+  with_flattened:
+      - "{{ privileges | list }}"
+  register: privileges_tmp
+
+- name: join privileges again
+  set_fact:
+    privileges: "{{ privileges_tmp.results | map(attribute='item') | list }}"
+
+- name: debug join
+  debug: var=privileges
+
+- name: create mysql user {{ this_user }}
+  mysql_user: >
+    name={{ item.name }}
+    password={{ item.password }}
+    host={{ item.host }}
+    state=present
+    login_host={{ mysql_login_host }}
+    login_user={{ mysql_login_user }}
+    login_password={{ mysql_login_pass }}
+    priv={{ privileges | join('/') }}

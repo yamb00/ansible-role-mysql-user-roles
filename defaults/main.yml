@@ -1,0 +1,6 @@
+---
+# defaults file for mysql-user-roles
+
+mysql_login_user: "root"
+mysql_login_host: "localhost"
+mysql_login_pass: ""
